@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <title>Golang 如何高效拼接字符串 | taojy的技术博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="在 Go 语言中，字符串(string) 是不可变的，拼接字符串事实上是创建了一个新的字符串对象。如果代码中存在大量的字符串拼接，对性能会产生严重的影响。
+几种常见的拼接方式 🔗 使用 &#43; 进行拼接； 使用 fmt.Spintf() 进行拼接; 使用 strings.Builder（可预分配） 进行拼接（推荐）; 使用 bytes.Buffer 进行拼接; 使用 []byte（可预分配） 进行拼接； 性能比较 🔗比较逻辑代码 🔗 go test -bench=&ldquo;Concat$&rdquo; -benchmem . // 正则执行以 Concat 结尾的 benchmark 函数，-benchmem 表示显示内存分配信息
+package main import ( &#34;bytes&#34; &#34;fmt&#34; &#34;math/rand&#34; &#34;strings&#34; &#34;testing&#34; ) const letterBytes = &#34;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&#34; func randomString(n int) string { b := make([]byte, n) for i := range b { b[i] = letterBytes[rand.Intn(len(letterBytes))] } return string(b) } func plusConcat(n int, str string) string { s := &#34;&#34; for i := 0; i &lt; n; i&#43;&#43; { s &#43;= str } return s } func sprintfConcat(n int, str string) string { s := &#34;&#34; for i := 0; i &lt; n; i&#43;&#43; { s = fmt.">
+<meta name="generator" content="Hugo 0.124.1">
+
+
+  <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+
+
+
+
+
+
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">Golang 如何高效拼接字符串</h1>
+
+    <div class="tip">
+        <time datetime="2022-03-27 21:30:20 &#43;0800 CST">2022年03月27日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          414字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          2分钟
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#几种常见的拼接方式">几种常见的拼接方式</a></li>
+    <li><a href="#性能比较">性能比较</a>
+      <ul>
+        <li><a href="#比较逻辑代码">比较逻辑代码</a></li>
+        <li><a href="#结果分析">结果分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能分析">性能分析</a></li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <blockquote>
+<p>在 Go 语言中，字符串(string) 是不可变的，拼接字符串事实上是创建了一个新的字符串对象。如果代码中存在大量的字符串拼接，对性能会产生严重的影响。</p>
+</blockquote>
+<h2 id="几种常见的拼接方式">几种常见的拼接方式 <a href="#%e5%87%a0%e7%a7%8d%e5%b8%b8%e8%a7%81%e7%9a%84%e6%8b%bc%e6%8e%a5%e6%96%b9%e5%bc%8f" class="anchor">🔗</a></h2><ol>
+<li>使用 <span style="color:#87CEEB; font-size:20px"> + </span> 进行拼接；</li>
+<li>使用 <span style="color:#87CEEB; font-size:20px"> fmt.Spintf() </span> 进行拼接;</li>
+<li>使用 <span style="color:#87CEEB; font-size:20px"> strings.Builder（可预分配） </span> 进行拼接（推荐）;</li>
+<li>使用 <span style="color:#87CEEB; font-size:20px"> bytes.Buffer </span> 进行拼接;</li>
+<li>使用 <span style="color:#87CEEB; font-size:20px"> []byte（可预分配） </span> 进行拼接；</li>
+</ol>
+<h2 id="性能比较">性能比较 <a href="#%e6%80%a7%e8%83%bd%e6%af%94%e8%be%83" class="anchor">🔗</a></h2><h3 id="比较逻辑代码">比较逻辑代码 <a href="#%e6%af%94%e8%be%83%e9%80%bb%e8%be%91%e4%bb%a3%e7%a0%81" class="anchor">🔗</a></h3><blockquote>
+<p>go test -bench=&ldquo;Concat$&rdquo; -benchmem .  // 正则执行以 Concat 结尾的 benchmark 函数，-benchmem 表示显示内存分配信息</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;bytes&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;math/rand&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;testing&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">letterBytes</span> = <span style="color:#e6db74">&#34;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">randomString</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">b</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#a6e22e">n</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">b</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">b</span>[<span style="color:#a6e22e">i</span>] = <span style="color:#a6e22e">letterBytes</span>[<span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Intn</span>(len(<span style="color:#a6e22e">letterBytes</span>))]
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">b</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">plusConcat</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">str</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">s</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">s</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">str</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">s</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">sprintfConcat</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">str</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">s</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">s</span> = <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;%s%s&#34;</span>, <span style="color:#a6e22e">s</span>, <span style="color:#a6e22e">str</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">s</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">builderConcat</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">str</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">builder</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Builder</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">builder</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">str</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">builder</span>.<span style="color:#a6e22e">String</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">preBuilderConcat</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">str</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">builder</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Builder</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">builder</span>.<span style="color:#a6e22e">Grow</span>(<span style="color:#a6e22e">n</span> <span style="color:#f92672">*</span> len(<span style="color:#a6e22e">str</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">builder</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">str</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">builder</span>.<span style="color:#a6e22e">String</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">bufferConcat</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">s</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">buf</span> <span style="color:#f92672">:=</span> new(<span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">Buffer</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">s</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">buf</span>.<span style="color:#a6e22e">String</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">byteConcat</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">str</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">buf</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span> = append(<span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">str</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">buf</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">[]byte 的升级版：预分配容量
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">preByteConcat</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">str</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">buf</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">n</span><span style="color:#f92672">*</span>len(<span style="color:#a6e22e">str</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span> = append(<span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">str</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">buf</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">benchmark</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>, <span style="color:#a6e22e">f</span> <span style="color:#66d9ef">func</span>(<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">str</span> = <span style="color:#a6e22e">randomString</span>(<span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">N</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">f</span>(<span style="color:#ae81ff">10000</span>, <span style="color:#a6e22e">str</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkPlusConcat</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>)       { <span style="color:#a6e22e">benchmark</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">plusConcat</span>) }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkSprintfConcat</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>)    { <span style="color:#a6e22e">benchmark</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">sprintfConcat</span>) }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkBuilderConcat</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>)    { <span style="color:#a6e22e">benchmark</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">builderConcat</span>) }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkPreBuilderConcat</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>) { <span style="color:#a6e22e">benchmark</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">preBuilderConcat</span>) }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkBufferConcat</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>)     { <span style="color:#a6e22e">benchmark</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">bufferConcat</span>) }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkByteConcat</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>)       { <span style="color:#a6e22e">benchmark</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">byteConcat</span>) }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">BenchmarkPreByteConcat</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">B</span>)    { <span style="color:#a6e22e">benchmark</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">preByteConcat</span>) }
+</span></span></code></pre></div><h3 id="结果分析">结果分析 <a href="#%e7%bb%93%e6%9e%9c%e5%88%86%e6%9e%90" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>BenchmarkPlusConcat-16                        <span style="color:#ae81ff">22</span>          <span style="color:#ae81ff">55582405</span> ns/op        <span style="color:#ae81ff">530998167</span> B/op     <span style="color:#ae81ff">10026</span> allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkSprintfConcat-16                     <span style="color:#ae81ff">12</span>          <span style="color:#ae81ff">95173333</span> ns/op        <span style="color:#ae81ff">833644274</span> B/op     <span style="color:#ae81ff">34183</span> allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkBuilderConcat-16                  <span style="color:#ae81ff">12667</span>            <span style="color:#ae81ff">107742</span> ns/op          <span style="color:#ae81ff">514801</span> B/op         <span style="color:#ae81ff">23</span> allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkPreBuilderConcat-16               <span style="color:#ae81ff">29996</span>             <span style="color:#ae81ff">40795</span> ns/op          <span style="color:#ae81ff">106496</span> B/op          <span style="color:#ae81ff">1</span> allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkBufferConcat-16                   <span style="color:#ae81ff">14992</span>             <span style="color:#ae81ff">81504</span> ns/op          <span style="color:#ae81ff">368577</span> B/op         <span style="color:#ae81ff">13</span> allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkByteConcat-16                      <span style="color:#ae81ff">9874</span>            <span style="color:#ae81ff">112861</span> ns/op          <span style="color:#ae81ff">621297</span> B/op         <span style="color:#ae81ff">24</span> allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkPreByteConcat-16                  <span style="color:#ae81ff">24306</span>             <span style="color:#ae81ff">50880</span> ns/op          <span style="color:#ae81ff">212992</span> B/op          <span style="color:#ae81ff">2</span> allocs/op
+</span></span></code></pre></div><ul>
+<li>四列结果分别表示：1s内该方法一共执行了多少次（越大越好）、ns/op 为每次执行该方法需要的时间（越小越好）、B/op 为每次执行函数分配多少内存（越小越好）、allocs/op 为每次执行函数一共分配了多少次内存（越小越好）；</li>
+<li>使用 fmt.Sprintf 最差，分配的内存次数和大小最大；+ 性能也很差；</li>
+<li>strings.Builder（预分配）&gt; []byte（预分配）&gt; bytes.Buffer &gt; strings.Builder &gt; []byte &gt; +号 &gt; fmt.Spirntf</li>
+</ul>
+<h2 id="性能分析">性能分析 <a href="#%e6%80%a7%e8%83%bd%e5%88%86%e6%9e%90" class="anchor">🔗</a></h2>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="/tags/go">GO</a>
+            
+                <a href="/tags/go-%E9%AB%98%E6%80%A7%E8%83%BD">GO 高性能</a>
+            
+                <a href="/tags/go-%E6%8A%80%E5%B7%A7">GO 技巧</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+
+    <div class="copyright">
+    
+        
+    
+    </div>
+
+    
+</footer>
+
+
+
+  </body>
+</html>

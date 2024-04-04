@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GO高性能 on taojy的技术博客</title>
+    <link>//localhost:1313/tags/go%E9%AB%98%E6%80%A7%E8%83%BD/</link>
+    <description>Recent content in GO高性能 on taojy的技术博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 27 Mar 2024 21:30:20 +0800</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/go%E9%AB%98%E6%80%A7%E8%83%BD/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Golang 如何高效拼接字符串</title>
+      <link>//localhost:1313/posts/golang/joinstrings/</link>
+      <pubDate>Wed, 27 Mar 2024 21:30:20 +0800</pubDate>
+      <guid>//localhost:1313/posts/golang/joinstrings/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>
