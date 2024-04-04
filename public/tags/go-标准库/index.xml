@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GO 标准库 on taojy的技术博客</title>
+    <link>/tags/go-%E6%A0%87%E5%87%86%E5%BA%93/</link>
+    <description>Recent content in GO 标准库 on taojy的技术博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Thu, 28 Apr 2022 21:30:20 +0800</lastBuildDate>
+    <atom:link href="/tags/go-%E6%A0%87%E5%87%86%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Golang 实现 http 服务的分析</title>
+      <link>/posts/golang/http%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0/</link>
+      <pubDate>Thu, 28 Apr 2022 21:30:20 +0800</pubDate>
+      <guid>/posts/golang/http%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

@@ -6,8 +6,22 @@
     <description>Recent content on taojy的技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Sun, 27 Mar 2022 21:30:20 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 28 Apr 2022 21:30:20 +0800</lastBuildDate>
     <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Golang 实现 http 服务的分析</title>
+      <link>/posts/golang/http%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0/</link>
+      <pubDate>Thu, 28 Apr 2022 21:30:20 +0800</pubDate>
+      <guid>/posts/golang/http%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Golang 死锁场景分析</title>
+      <link>/posts/golang/%E6%AD%BB%E9%94%81/</link>
+      <pubDate>Wed, 27 Apr 2022 21:30:20 +0800</pubDate>
+      <guid>/posts/golang/%E6%AD%BB%E9%94%81/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Golang 的一些陷阱</title>
       <link>/posts/golang/golang-%E7%9A%84%E4%B8%80%E4%BA%9B%E9%99%B7%E9%98%B1/</link>
@@ -27,7 +41,7 @@
       <link>/posts/golang/%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84map%E5%91%A2/</link>
       <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
       <guid>/posts/golang/%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84map%E5%91%A2/</guid>
-      <description>Golang 的 Map 不但是 无序 的，而且还是 非线程安全的。&#xA;读写锁 实现线程安全 amp 🔗定义 🔗type SafeMap struct { mu sync.RWMutex m map[string]int } func NewSafeMap() *SafeMap { return &amp;amp;SafeMap{ m: make(map[string]int), } } func (sm *SafeMap) Get(key string) (int, bool) { sm.mu.RLock() defer sm.mu.RUnlock() val, ok := sm.m[key] return val, ok } func (sm *SafeMap) Set(key string, value int) { sm.mu.Lock() defer sm.mu.Unlock() sm.m[key] = value } 使用 🔗safeMap := NewSafeMap() // 读操作 val, ok := safeMap.</description>
+      <description>Golang 的 Map 不但是 无序 的，而且还是 非线程安全的。&#xA;读写锁 实现线程安全 map 🔗定义 🔗type SafeMap struct { mu sync.RWMutex m map[string]int } func NewSafeMap() *SafeMap { return &amp;amp;SafeMap{ m: make(map[string]int), } } func (sm *SafeMap) Get(key string) (int, bool) { sm.mu.RLock() defer sm.mu.RUnlock() val, ok := sm.m[key] return val, ok } func (sm *SafeMap) Set(key string, value int) { sm.mu.Lock() defer sm.mu.Unlock() sm.m[key] = value } 使用 🔗safeMap := NewSafeMap() // 读操作 val, ok := safeMap.</description>
     </item>
   </channel>
 </rss>
