@@ -9,11 +9,25 @@
     <lastBuildDate>Sun, 27 Mar 2022 21:30:20 +0800</lastBuildDate>
     <atom:link href="/tags/go/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Golang 的一些陷阱</title>
+      <link>/posts/golang/golang-%E7%9A%84%E4%B8%80%E4%BA%9B%E9%99%B7%E9%98%B1/</link>
+      <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
+      <guid>/posts/golang/golang-%E7%9A%84%E4%B8%80%E4%BA%9B%E9%99%B7%E9%98%B1/</guid>
+      <description>for range 的陷阱 🔗m := map[int]string{ 1: &amp;#34;one&amp;#34;, 2: &amp;#34;two&amp;#34;, 3: &amp;#34;three&amp;#34;, } sli := []*string{} for _, v := range m { sli = append(sli, &amp;amp;v) } fmt.Println(*sli[0], *sli[1], *sli[2]) // three three three 为什么每次输出都一样呢？因为 for range 循环的时候 v 是一个副本，地址是不变的，所以不要把 &amp;amp;v 作为值复制给别的变量值，要不然每次读取的都是同一个地址上的值，当然是一样的了。</description>
+    </item>
+    <item>
       <title>Golang 如何高效拼接字符串</title>
       <link>/posts/golang/joinstrings/</link>
       <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
       <guid>/posts/golang/joinstrings/</guid>
       <description>在 Go 语言中，字符串(string) 是不可变的，拼接字符串事实上是创建了一个新的字符串对象。如果代码中存在大量的字符串拼接，对性能会产生严重的影响。&#xA;几种常见的拼接方式 🔗 使用 + 进行拼接； 使用 fmt.Spintf() 进行拼接; 使用 strings.Builder（可预分配） 进行拼接（推荐）; 使用 bytes.Buffer 进行拼接; 使用 []byte（可预分配） 进行拼接； 性能比较 🔗比较逻辑代码 🔗 go test -bench=&amp;quot;Concat$&amp;quot; -benchmem . // 正则执行以 Concat 结尾的 benchmark 函数，-benchmem 表示显示内存分配信息&#xA;package main import ( &amp;#34;bytes&amp;#34; &amp;#34;fmt&amp;#34; &amp;#34;math/rand&amp;#34; &amp;#34;strings&amp;#34; &amp;#34;testing&amp;#34; ) const letterBytes = &amp;#34;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&amp;#34; func randomString(n int) string { b := make([]byte, n) for i := range b { b[i] = letterBytes[rand.Intn(len(letterBytes))] } return string(b) } func plusConcat(n int, str string) string { s := &amp;#34;&amp;#34; for i := 0; i &amp;lt; n; i++ { s += str } return s } func sprintfConcat(n int, str string) string { s := &amp;#34;&amp;#34; for i := 0; i &amp;lt; n; i++ { s = fmt.</description>
+    </item>
+    <item>
+      <title>如何实现一个线程安全的 map 呢？</title>
+      <link>/posts/golang/%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84map%E5%91%A2/</link>
+      <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
+      <guid>/posts/golang/%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84map%E5%91%A2/</guid>
+      <description>Golang 的 Map 不但是 无序 的，而且还是 非线程安全的。&#xA;读写锁 实现线程安全 amp 🔗定义 🔗type SafeMap struct { mu sync.RWMutex m map[string]int } func NewSafeMap() *SafeMap { return &amp;amp;SafeMap{ m: make(map[string]int), } } func (sm *SafeMap) Get(key string) (int, bool) { sm.mu.RLock() defer sm.mu.RUnlock() val, ok := sm.m[key] return val, ok } func (sm *SafeMap) Set(key string, value int) { sm.mu.Lock() defer sm.mu.Unlock() sm.m[key] = value } 使用 🔗safeMap := NewSafeMap() // 读操作 val, ok := safeMap.</description>
     </item>
   </channel>
 </rss>
