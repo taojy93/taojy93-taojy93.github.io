@@ -57,7 +57,7 @@ package main import ( &#34;bytes&#34; &#34;fmt&#34; &#34;math/rand&#34; &#34;str
           ·
         </span>
         <span>
-          532字
+          531字
         </span>
         <span class="split">
           ·
@@ -87,9 +87,8 @@ package main import ( &#34;bytes&#34; &#34;fmt&#34; &#34;math/rand&#34; &#34;str
     </li>
     <li><a href="#性能分析">性能分析</a>
       <ul>
-        <li><a href="#stringsbuilder-的性能会比--提高那么多的原因">strings.Builder 的性能会比 + 提高那么多的原因</a></li>
-        <li><a href="#stringsbuilder-比-bytesbuffer-性能稍高的原因">strings.Builder 比 bytes.Buffer 性能稍高的原因</a></li>
-        <li><a href="#stringsbuilder预分配-比-byte预分配少一次内存分配的原因">strings.Builder（预分配） 比 []byte（预分配）少一次内存分配的原因</a></li>
+        <li><a href="#stringsbuilder-的性能会比--提高那么多的原因"><code>strings.Builder</code> 的性能会比 <code>+</code> 提高那么多的原因</a></li>
+        <li><a href="#预分配-的性能得到大幅提升的原因"><code>预分配</code> 的性能得到大幅提升的原因</a></li>
       </ul>
     </li>
   </ul>
@@ -224,16 +223,16 @@ package main import ( &#34;bytes&#34; &#34;fmt&#34; &#34;math/rand&#34; &#34;str
 <li>strings.Builder（预分配）&gt; []byte（预分配）&gt; bytes.Buffer &gt; strings.Builder &gt; []byte &gt; +号 &gt; fmt.Spirntf</li>
 </ul>
 <h2 id="性能分析">性能分析 <a href="#%e6%80%a7%e8%83%bd%e5%88%86%e6%9e%90" class="anchor">🔗</a></h2><blockquote>
-<p>我们发现上面越是 <code>内存分配次数少</code>，性能越高；<code>每次内存分配越少</code>，性能越高；</p>
+<p>我们发现上面 <code>内存分配次数越少</code>，性能越高；<code>内存分配大小越小</code>，性能越高；</p>
 </blockquote>
-<h3 id="stringsbuilder-的性能会比--提高那么多的原因">strings.Builder 的性能会比 + 提高那么多的原因 <a href="#stringsbuilder-%e7%9a%84%e6%80%a7%e8%83%bd%e4%bc%9a%e6%af%94--%e6%8f%90%e9%ab%98%e9%82%a3%e4%b9%88%e5%a4%9a%e7%9a%84%e5%8e%9f%e5%9b%a0" class="anchor">🔗</a></h3><p>        因为字符串的修改原理是：因为字符串可以看做是分配在 <code>只读内存空间</code>上的 []byte，每次修改需要先在 <code>可写内存空间</code> 上面分配内存变量 []byte，把 <code>只读内存空间</code> 上面的 []byte 转移到 <code>可写内存空间</code> []byte 上，然后修改，修改完成之后需要再写入到 <code>只读内存空间</code> （这个 <code>新只读空间</code> 和之前那个 <code>旧只读空间</code> 完全没有关系）。<br />
+<h3 id="stringsbuilder-的性能会比--提高那么多的原因"><code>strings.Builder</code> 的性能会比 <code>+</code> 提高那么多的原因 <a href="#stringsbuilder-%e7%9a%84%e6%80%a7%e8%83%bd%e4%bc%9a%e6%af%94--%e6%8f%90%e9%ab%98%e9%82%a3%e4%b9%88%e5%a4%9a%e7%9a%84%e5%8e%9f%e5%9b%a0" class="anchor">🔗</a></h3><p>        因为字符串的修改原理是：因为字符串可以看做是分配在 <code>只读内存空间</code>上的 []byte，每次修改需要先在 <code>可写内存空间</code> 上面分配内存变量 []byte，把 <code>只读内存空间</code> 上面的 []byte 转移到 <code>可写内存空间</code> []byte 上，然后修改，修改完成之后需要再写入到 <code>只读内存空间</code> （这个 <code>新只读空间</code> 和之前那个 <code>旧只读空间</code> 完全没有关系）。<br />
         所以每次 + 拼接字符串其实就是一次修改字符串，都需要重复上面的分配内存操作；而且因为前后两次的 <code>只读内存空间</code> 完全不一致，所以需要更多的内存分配。<br />
         可是 <code>strings.Builder</code> 其实底层是一个 <code>[]byte</code> 和一个 <code>指向 []byte首位空间的指针地址</code> 组成；所以并不是每次拼接都需要重新分配内存，只有在 []byte 现需要扩容的时候才会重新分配内存；所以它的分配次数会大大降低；<br />
         例如：现在有一个字符串 &ldquo;a&rdquo;，循环拼接 1024 次；<br />
         使用 <code>+</code> 拼接：因为每次都需要分配内存，所以一共需要分配 1024 次内存，总共需要的内存空间是 1 + 1 * 2 + 1 * 3 + 1 * 4 + &hellip; + 1 * 1024 byte = 5MB<br />
         使用 <code>strings.Builder</code> 拼接：因为只有触发 slice 扩容的时候才需要分配内存，触发扩容的时机是：第 1 次、 第 2 次、第 4 次，第 8 次 &hellip; 第 29 次，一共需要分配 10 次即可，总共需要分配的内存大小：1 + 2 + 4 + &hellip; + 1024 byte = 5KB</p>
-<h3 id="stringsbuilder-比-bytesbuffer-性能稍高的原因">strings.Builder 比 bytes.Buffer 性能稍高的原因 <a href="#stringsbuilder-%e6%af%94-bytesbuffer-%e6%80%a7%e8%83%bd%e7%a8%8d%e9%ab%98%e7%9a%84%e5%8e%9f%e5%9b%a0" class="anchor">🔗</a></h3><p>        虽然 <code>strings.Builder</code> 和 <code>bytes.Buffer</code> 的底层关键结构都是 []byte</p>
-<h3 id="stringsbuilder预分配-比-byte预分配少一次内存分配的原因">strings.Builder（预分配） 比 []byte（预分配）少一次内存分配的原因 <a href="#stringsbuilder%e9%a2%84%e5%88%86%e9%85%8d-%e6%af%94-byte%e9%a2%84%e5%88%86%e9%85%8d%e5%b0%91%e4%b8%80%e6%ac%a1%e5%86%85%e5%ad%98%e5%88%86%e9%85%8d%e7%9a%84%e5%8e%9f%e5%9b%a0" class="anchor">🔗</a></h3>
+<h3 id="预分配-的性能得到大幅提升的原因"><code>预分配</code> 的性能得到大幅提升的原因 <a href="#%e9%a2%84%e5%88%86%e9%85%8d-%e7%9a%84%e6%80%a7%e8%83%bd%e5%be%97%e5%88%b0%e5%a4%a7%e5%b9%85%e6%8f%90%e5%8d%87%e7%9a%84%e5%8e%9f%e5%9b%a0" class="anchor">🔗</a></h3><p>        因为采用 <code>预分配</code> 几乎完全避免了内存的分配，我们知道内存的频繁分配是造成性能低下的主要原因，预分配只用在初次分配一次即可，所以相比较 <code>+</code> 拼接每次都需要分配一次内存，以及相比较 <code>strings.Builder</code> 和 <code>bytes.Buffer</code> 借助 slice 的扩容策略进行分配内存，有了质的提升。所以性能得到了大幅度的提升。</p>
+
     </div>
 
     
