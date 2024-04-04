@@ -10,18 +10,18 @@ draft: false
 
 ## 几种常见的拼接方式
 
-1. 使用 <span style="color:#87CEEB; font-size:20px"> + </span> 进行拼接；
-2. 使用 <span style="color:#87CEEB; font-size:20px"> fmt.Spintf() </span> 进行拼接;
-3. 使用 <span style="color:#87CEEB; font-size:20px"> strings.Builder（可预分配） </span> 进行拼接（推荐）;
-4. 使用 <span style="color:#87CEEB; font-size:20px"> bytes.Buffer </span> 进行拼接;
-5. 使用 <span style="color:#87CEEB; font-size:20px"> []byte（可预分配） </span> 进行拼接；
+1. 使用 <span style="color:#87CEEB; font-size:20px">` + `</span> 进行拼接；
+2. 使用 <span style="color:#87CEEB; font-size:20px">` fmt.Spintf() `</span> 进行拼接;
+3. 使用 <span style="color:#87CEEB; font-size:20px">` strings.Builder（可预分配） `</span> 进行拼接（推荐）;
+4. 使用 <span style="color:#87CEEB; font-size:20px">` bytes.Buffer `</span> 进行拼接;
+5. 使用 <span style="color:#87CEEB; font-size:20px">` []byte（可预分配） `</span> 进行拼接；
 
 
 ## 性能比较
 
 ### 比较逻辑代码
 
-> go test -bench="Concat$" -benchmem .  // 正则执行以 Concat 结尾的 benchmark 函数，-benchmem 表示显示内存分配信息
+> `go test -bench="Concat$" -benchmem .`  // 正则执行以 Concat 结尾的 benchmark 函数，-benchmem 表示显示内存分配信息
 
 ```go
 package main
@@ -138,4 +138,21 @@ BenchmarkPreByteConcat-16                  24306             50880 ns/op        
 - strings.Builder（预分配）> []byte（预分配）> bytes.Buffer > strings.Builder > []byte > +号 > fmt.Spirntf
 
 ## 性能分析
+
+> 我们发现上面越是 `内存分配次数少`，性能越高；`每次内存分配越少`，性能越高；
+
+### strings.Builder 的性能会比 + 提高那么多的原因
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;因为字符串的修改原理是：因为字符串可以看做是分配在 `只读内存空间`上的 []byte，每次修改需要先在 `可写内存空间` 上面分配内存变量 []byte，把 `只读内存空间` 上面的 []byte 转移到 `可写内存空间` []byte 上，然后修改，修改完成之后需要再写入到 `只读内存空间` （这个 `新只读空间` 和之前那个 `旧只读空间` 完全没有关系）。<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;所以每次 + 拼接字符串其实就是一次修改字符串，都需要重复上面的分配内存操作；而且因为前后两次的 `只读内存空间` 完全不一致，所以需要更多的内存分配。<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;可是 `strings.Builder` 其实底层是一个 `[]byte` 和一个 `指向 []byte首位空间的指针地址` 组成；所以并不是每次拼接都需要重新分配内存，只有在 []byte 现需要扩容的时候才会重新分配内存；所以它的分配次数会大大降低；<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;例如：现在有一个字符串 "a"，循环拼接 1024 次；<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;使用 `+` 拼接：因为每次都需要分配内存，所以一共需要分配 1024 次内存，总共需要的内存空间是 1 + 1 * 2 + 1 * 3 + 1 * 4 + ... + 1 * 1024 byte = 5MB<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;使用 `strings.Builder` 拼接：因为只有触发 slice 扩容的时候才需要分配内存，触发扩容的时机是：第 1 次、 第 2 次、第 4 次，第 8 次 ... 第 29 次，一共需要分配 10 次即可，总共需要分配的内存大小：1 + 2 + 4 + ... + 1024 byte = 5KB
+
+### strings.Builder 比 bytes.Buffer 性能稍高的原因
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;虽然 `strings.Builder` 和 `bytes.Buffer` 的底层关键结构都是 []byte
+
+### strings.Builder（预分配） 比 []byte（预分配）少一次内存分配的原因
 

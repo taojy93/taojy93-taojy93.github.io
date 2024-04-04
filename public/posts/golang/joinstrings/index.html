@@ -7,7 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
 <meta name="viewport" content="width=device-width,minimum-scale=1">
 <meta name="description" content="在 Go 语言中，字符串(string) 是不可变的，拼接字符串事实上是创建了一个新的字符串对象。如果代码中存在大量的字符串拼接，对性能会产生严重的影响。
-几种常见的拼接方式 🔗 使用 &#43; 进行拼接； 使用 fmt.Spintf() 进行拼接; 使用 strings.Builder（可预分配） 进行拼接（推荐）; 使用 bytes.Buffer 进行拼接; 使用 []byte（可预分配） 进行拼接； 性能比较 🔗比较逻辑代码 🔗 go test -bench=&ldquo;Concat$&rdquo; -benchmem . // 正则执行以 Concat 结尾的 benchmark 函数，-benchmem 表示显示内存分配信息
+几种常见的拼接方式 🔗 使用 &#43; 进行拼接； 使用 fmt.Spintf() 进行拼接; 使用 strings.Builder（可预分配） 进行拼接（推荐）; 使用 bytes.Buffer 进行拼接; 使用 []byte（可预分配） 进行拼接； 性能比较 🔗比较逻辑代码 🔗 go test -bench=&quot;Concat$&quot; -benchmem . // 正则执行以 Concat 结尾的 benchmark 函数，-benchmem 表示显示内存分配信息
 package main import ( &#34;bytes&#34; &#34;fmt&#34; &#34;math/rand&#34; &#34;strings&#34; &#34;testing&#34; ) const letterBytes = &#34;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&#34; func randomString(n int) string { b := make([]byte, n) for i := range b { b[i] = letterBytes[rand.Intn(len(letterBytes))] } return string(b) } func plusConcat(n int, str string) string { s := &#34;&#34; for i := 0; i &lt; n; i&#43;&#43; { s &#43;= str } return s } func sprintfConcat(n int, str string) string { s := &#34;&#34; for i := 0; i &lt; n; i&#43;&#43; { s = fmt.">
 <meta name="generator" content="Hugo 0.124.1">
 
@@ -57,13 +57,13 @@ package main import ( &#34;bytes&#34; &#34;fmt&#34; &#34;math/rand&#34; &#34;str
           ·
         </span>
         <span>
-          414字
+          532字
         </span>
         <span class="split">
           ·
         </span>
         <span>
-          2分钟
+          3分钟
         </span>
     </div>
 
@@ -85,7 +85,13 @@ package main import ( &#34;bytes&#34; &#34;fmt&#34; &#34;math/rand&#34; &#34;str
         <li><a href="#结果分析">结果分析</a></li>
       </ul>
     </li>
-    <li><a href="#性能分析">性能分析</a></li>
+    <li><a href="#性能分析">性能分析</a>
+      <ul>
+        <li><a href="#stringsbuilder-的性能会比--提高那么多的原因">strings.Builder 的性能会比 + 提高那么多的原因</a></li>
+        <li><a href="#stringsbuilder-比-bytesbuffer-性能稍高的原因">strings.Builder 比 bytes.Buffer 性能稍高的原因</a></li>
+        <li><a href="#stringsbuilder预分配-比-byte预分配少一次内存分配的原因">strings.Builder（预分配） 比 []byte（预分配）少一次内存分配的原因</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
           </div>
@@ -102,14 +108,14 @@ package main import ( &#34;bytes&#34; &#34;fmt&#34; &#34;math/rand&#34; &#34;str
 <p>在 Go 语言中，字符串(string) 是不可变的，拼接字符串事实上是创建了一个新的字符串对象。如果代码中存在大量的字符串拼接，对性能会产生严重的影响。</p>
 </blockquote>
 <h2 id="几种常见的拼接方式">几种常见的拼接方式 <a href="#%e5%87%a0%e7%a7%8d%e5%b8%b8%e8%a7%81%e7%9a%84%e6%8b%bc%e6%8e%a5%e6%96%b9%e5%bc%8f" class="anchor">🔗</a></h2><ol>
-<li>使用 <span style="color:#87CEEB; font-size:20px"> + </span> 进行拼接；</li>
-<li>使用 <span style="color:#87CEEB; font-size:20px"> fmt.Spintf() </span> 进行拼接;</li>
-<li>使用 <span style="color:#87CEEB; font-size:20px"> strings.Builder（可预分配） </span> 进行拼接（推荐）;</li>
-<li>使用 <span style="color:#87CEEB; font-size:20px"> bytes.Buffer </span> 进行拼接;</li>
-<li>使用 <span style="color:#87CEEB; font-size:20px"> []byte（可预分配） </span> 进行拼接；</li>
+<li>使用 <span style="color:#87CEEB; font-size:20px"><code>+</code></span> 进行拼接；</li>
+<li>使用 <span style="color:#87CEEB; font-size:20px"><code>fmt.Spintf()</code></span> 进行拼接;</li>
+<li>使用 <span style="color:#87CEEB; font-size:20px"><code>strings.Builder（可预分配）</code></span> 进行拼接（推荐）;</li>
+<li>使用 <span style="color:#87CEEB; font-size:20px"><code>bytes.Buffer</code></span> 进行拼接;</li>
+<li>使用 <span style="color:#87CEEB; font-size:20px"><code>[]byte（可预分配）</code></span> 进行拼接；</li>
 </ol>
 <h2 id="性能比较">性能比较 <a href="#%e6%80%a7%e8%83%bd%e6%af%94%e8%be%83" class="anchor">🔗</a></h2><h3 id="比较逻辑代码">比较逻辑代码 <a href="#%e6%af%94%e8%be%83%e9%80%bb%e8%be%91%e4%bb%a3%e7%a0%81" class="anchor">🔗</a></h3><blockquote>
-<p>go test -bench=&ldquo;Concat$&rdquo; -benchmem .  // 正则执行以 Concat 结尾的 benchmark 函数，-benchmem 表示显示内存分配信息</p>
+<p><code>go test -bench=&quot;Concat$&quot; -benchmem .</code>  // 正则执行以 Concat 结尾的 benchmark 函数，-benchmem 表示显示内存分配信息</p>
 </blockquote>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 </span></span><span style="display:flex;"><span>
@@ -217,7 +223,17 @@ package main import ( &#34;bytes&#34; &#34;fmt&#34; &#34;math/rand&#34; &#34;str
 <li>使用 fmt.Sprintf 最差，分配的内存次数和大小最大；+ 性能也很差；</li>
 <li>strings.Builder（预分配）&gt; []byte（预分配）&gt; bytes.Buffer &gt; strings.Builder &gt; []byte &gt; +号 &gt; fmt.Spirntf</li>
 </ul>
-<h2 id="性能分析">性能分析 <a href="#%e6%80%a7%e8%83%bd%e5%88%86%e6%9e%90" class="anchor">🔗</a></h2>
+<h2 id="性能分析">性能分析 <a href="#%e6%80%a7%e8%83%bd%e5%88%86%e6%9e%90" class="anchor">🔗</a></h2><blockquote>
+<p>我们发现上面越是 <code>内存分配次数少</code>，性能越高；<code>每次内存分配越少</code>，性能越高；</p>
+</blockquote>
+<h3 id="stringsbuilder-的性能会比--提高那么多的原因">strings.Builder 的性能会比 + 提高那么多的原因 <a href="#stringsbuilder-%e7%9a%84%e6%80%a7%e8%83%bd%e4%bc%9a%e6%af%94--%e6%8f%90%e9%ab%98%e9%82%a3%e4%b9%88%e5%a4%9a%e7%9a%84%e5%8e%9f%e5%9b%a0" class="anchor">🔗</a></h3><p>        因为字符串的修改原理是：因为字符串可以看做是分配在 <code>只读内存空间</code>上的 []byte，每次修改需要先在 <code>可写内存空间</code> 上面分配内存变量 []byte，把 <code>只读内存空间</code> 上面的 []byte 转移到 <code>可写内存空间</code> []byte 上，然后修改，修改完成之后需要再写入到 <code>只读内存空间</code> （这个 <code>新只读空间</code> 和之前那个 <code>旧只读空间</code> 完全没有关系）。<br />
+        所以每次 + 拼接字符串其实就是一次修改字符串，都需要重复上面的分配内存操作；而且因为前后两次的 <code>只读内存空间</code> 完全不一致，所以需要更多的内存分配。<br />
+        可是 <code>strings.Builder</code> 其实底层是一个 <code>[]byte</code> 和一个 <code>指向 []byte首位空间的指针地址</code> 组成；所以并不是每次拼接都需要重新分配内存，只有在 []byte 现需要扩容的时候才会重新分配内存；所以它的分配次数会大大降低；<br />
+        例如：现在有一个字符串 &ldquo;a&rdquo;，循环拼接 1024 次；<br />
+        使用 <code>+</code> 拼接：因为每次都需要分配内存，所以一共需要分配 1024 次内存，总共需要的内存空间是 1 + 1 * 2 + 1 * 3 + 1 * 4 + &hellip; + 1 * 1024 byte = 5MB<br />
+        使用 <code>strings.Builder</code> 拼接：因为只有触发 slice 扩容的时候才需要分配内存，触发扩容的时机是：第 1 次、 第 2 次、第 4 次，第 8 次 &hellip; 第 29 次，一共需要分配 10 次即可，总共需要分配的内存大小：1 + 2 + 4 + &hellip; + 1024 byte = 5KB</p>
+<h3 id="stringsbuilder-比-bytesbuffer-性能稍高的原因">strings.Builder 比 bytes.Buffer 性能稍高的原因 <a href="#stringsbuilder-%e6%af%94-bytesbuffer-%e6%80%a7%e8%83%bd%e7%a8%8d%e9%ab%98%e7%9a%84%e5%8e%9f%e5%9b%a0" class="anchor">🔗</a></h3><p>        虽然 <code>strings.Builder</code> 和 <code>bytes.Buffer</code> 的底层关键结构都是 []byte</p>
+<h3 id="stringsbuilder预分配-比-byte预分配少一次内存分配的原因">strings.Builder（预分配） 比 []byte（预分配）少一次内存分配的原因 <a href="#stringsbuilder%e9%a2%84%e5%88%86%e9%85%8d-%e6%af%94-byte%e9%a2%84%e5%88%86%e9%85%8d%e5%b0%91%e4%b8%80%e6%ac%a1%e5%86%85%e5%ad%98%e5%88%86%e9%85%8d%e7%9a%84%e5%8e%9f%e5%9b%a0" class="anchor">🔗</a></h3>
     </div>
 
     
