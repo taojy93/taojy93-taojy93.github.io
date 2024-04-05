@@ -9,7 +9,7 @@
     <lastBuildDate>Thu, 28 Apr 2022 21:30:20 +0800</lastBuildDate>
     <atom:link href="/tags/go-%E6%A0%87%E5%87%86%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Golang 实现 http 服务的分析</title>
+      <title>Golang 实现 HTTP 服务的分析</title>
       <link>/posts/golang/http%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0/</link>
       <pubDate>Thu, 28 Apr 2022 21:30:20 +0800</pubDate>
       <guid>/posts/golang/http%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0/</guid>
