@@ -91,7 +91,7 @@ go func() {
 ### 定义
 
 ```go
-package shardlock
+package shardmap
 
 import "sync"
 
@@ -231,3 +231,59 @@ https://github.com/orcaman/concurrent-map
 
 
 ## `乐观锁` 实现线程安全 map
+
+### 实现
+
+```go
+package optimisticlockmap
+
+import "sync/atomic"
+
+/*
+基于原子操作实现的线程安全的map
+*/
+
+type SafeMap struct {
+	Data    map[string]interface{}
+	version int64
+}
+
+func NewSafeMap() *SafeMap {
+	return &SafeMap{
+		Data: make(map[string]interface{}),
+	}
+}
+
+func (sm *SafeMap) Load(key string) (interface{}, bool) {
+	val, ok := sm.Data[key]
+	return val, ok
+}
+
+func (sm *SafeMap) Store(key string, value int) {
+	for {
+		oldVersion := atomic.LoadInt64(&sm.version)
+		newData := make(map[string]interface{})
+		for k, v := range sm.Data {
+			newData[k] = v
+		}
+		newData[key] = value
+		newVersion := oldVersion + 1
+		if atomic.CompareAndSwapInt64(&sm.version, oldVersion, newVersion) {
+			sm.Data = newData
+			return
+		}
+	}
+}
+
+func (sm *SafeMap) Version() int64 {
+	return atomic.LoadInt64(&sm.version)
+}
+```
+
+### 使用
+
+```go
+m := optimisticlockmap.NewSafeMap()
+m.Store("key", 2)
+v, _ := m.Load("key")
+```
