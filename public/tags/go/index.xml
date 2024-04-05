@@ -16,7 +16,7 @@
       <description>启动一个 HTTP 服务 🔗 func handler(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, &amp;#34;Hello, Golang&amp;#34;) } // 写法一 func main() { http.HandleFunc(&amp;#34;/hello&amp;#34;, handler) http.ListenAndServe(&amp;#34;:8888&amp;#34;, nil) } // 写法二 func main() { http.HandleFunc(&amp;#34;/&amp;#34;, handler) srv := http.Server{ Addr: &amp;#34;:8888&amp;#34;, Handler: nil, } srv.ListenAndServe() } 上面第一种写法是一种简化的写法，其实底层也是调用的第二种写法的 srv.ListenAndServe()&#xA;ListenAndServe() 处理请求的底层 🔗func (srv *Server) ListenAndServe() error { addr := srv.Addr if addr == &amp;#34;&amp;#34; { addr = &amp;#34;:http&amp;#34; } ln, err := net.Listen(&amp;#34;tcp&amp;#34;, addr) if err !</description>
     </item>
     <item>
-      <title>Golang 的 GPM协程 调度器</title>
+      <title>GPM 协程调度器</title>
       <link>/posts/golang/gpm%E8%B0%83%E5%BA%A6%E5%99%A8/</link>
       <pubDate>Wed, 27 Apr 2022 21:30:20 +0800</pubDate>
       <guid>/posts/golang/gpm%E8%B0%83%E5%BA%A6%E5%99%A8/</guid>
