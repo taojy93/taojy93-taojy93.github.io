@@ -20,7 +20,7 @@
       <link>/posts/golang/slice%E6%89%A9%E5%AE%B9/</link>
       <pubDate>Wed, 27 Apr 2022 21:30:20 +0800</pubDate>
       <guid>/posts/golang/slice%E6%89%A9%E5%AE%B9/</guid>
-      <description></description>
+      <description>各个版本的扩容策略有些区别，我们谈谈 1.18 之前和之后&#xA;&amp;lt;1.18 版本 🔗源码 🔗newcap := old.cap doublecap := newcap + newcap if cap &amp;gt; doublecap { newcap = cap } else { if old.cap &amp;lt; 1024 { newcap = doublecap } else { // Check 0 &amp;lt; newcap to detect overflow // and prevent an infinite loop. for 0 &amp;lt; newcap &amp;amp;&amp;amp; newcap &amp;lt; cap { newcap += newcap / 4 } // Set newcap to the requested cap when // the newcap calculation overflowed.</description>
     </item>
     <item>
       <title>Golang 的一些陷阱</title>
@@ -28,6 +28,13 @@
       <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
       <guid>/posts/golang/golang-%E7%9A%84%E4%B8%80%E4%BA%9B%E9%99%B7%E9%98%B1/</guid>
       <description>for range 的陷阱 🔗m := map[int]string{ 1: &amp;#34;one&amp;#34;, 2: &amp;#34;two&amp;#34;, 3: &amp;#34;three&amp;#34;, } sli := []*string{} for _, v := range m { sli = append(sli, &amp;amp;v) } fmt.Println(*sli[0], *sli[1], *sli[2]) // three three three 为什么每次输出都一样呢？因为 for range 循环的时候 v 是一个副本，地址是不变的，所以不要把 &amp;amp;v 作为值复制给别的变量值，要不然每次读取的都是同一个地址上的值，当然是一样的了。</description>
+    </item>
+    <item>
+      <title>map “扩容策略” 和 “如何应对哈希冲突” </title>
+      <link>/posts/golang/map-%E7%9A%84%E6%89%A9%E5%AE%B9%E7%AD%96%E7%95%A5/</link>
+      <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
+      <guid>/posts/golang/map-%E7%9A%84%E6%89%A9%E5%AE%B9%E7%AD%96%E7%95%A5/</guid>
+      <description></description>
     </item>
     <item>
       <title>如何实现一个线程安全的 map 呢？</title>

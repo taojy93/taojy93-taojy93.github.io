@@ -74,7 +74,9 @@ func (srv *Server) Serve(l net.Listener) error {
 
 ## 多路复用器
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在创建服务的时候，ListenAndServe 方法的第二个参数其实指的就是一个多路复用器，因为 Golang 实现了一个默认的 ` 多路复用器 DefaultServeMux ` ，所以我们传递 nil 的时候也可以正常使用。<br />
+> `多路复用器` 其实就是对 `Handler接口` 的一个具体实现。
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在创建服务的时候，ListenAndServe 方法的第二个参数其实指的就是一个多路复用器，因为 Golang 实现了一个默认的 ` 多路复用器 DefaultServeMux ` ，DefaultServeMux 也是对 Handler（接口） 的一个具体实现，所以我们传递 nil 的时候也可以正常使用。<br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;不过Golang实现的这个默认的多路复用器不是那么好，例如不支持更高级的路由功能（路由组，中间件），也需要对路由算法做更好的优化；所以很多 web框架 其实都是重新实现了更细致的多路复用器的。
 
 ## Gin对多路复用器的实现
@@ -127,7 +129,7 @@ func (engine *Engine) Run(addr string) (err error) {
 	return http.ListenAndServe(addr, engine)
 }
 ```
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们可以看到上面需要实现一个 `多路复用器`，必须实现 `ServeHTTP()` 方法。因为必须实现 Handler 接口，Handler 接口如下：
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们可以看到上面需要实现一个 `多路复用器`，必须实现 `ServeHTTP()` 方法。因为必须实现 `Handler接口`，Handler接口如下：
 ```go
 type Handler interface {
     ServeHTTP(ResponseWriter, *Request)

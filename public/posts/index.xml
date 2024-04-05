@@ -34,7 +34,7 @@
       <link>/posts/golang/slice%E6%89%A9%E5%AE%B9/</link>
       <pubDate>Wed, 27 Apr 2022 21:30:20 +0800</pubDate>
       <guid>/posts/golang/slice%E6%89%A9%E5%AE%B9/</guid>
-      <description></description>
+      <description>各个版本的扩容策略有些区别，我们谈谈 1.18 之前和之后&#xA;&amp;lt;1.18 版本 🔗源码 🔗newcap := old.cap doublecap := newcap + newcap if cap &amp;gt; doublecap { newcap = cap } else { if old.cap &amp;lt; 1024 { newcap = doublecap } else { // Check 0 &amp;lt; newcap to detect overflow // and prevent an infinite loop. for 0 &amp;lt; newcap &amp;amp;&amp;amp; newcap &amp;lt; cap { newcap += newcap / 4 } // Set newcap to the requested cap when // the newcap calculation overflowed.</description>
     </item>
     <item>
       <title>Golang 的一些陷阱</title>
@@ -49,6 +49,13 @@
       <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
       <guid>/posts/golang/joinstrings/</guid>
       <description>在 Go 语言中，字符串(string) 是不可变的，拼接字符串事实上是创建了一个新的字符串对象。如果代码中存在大量的字符串拼接，对性能会产生严重的影响。&#xA;几种常见的拼接方式 🔗 使用 + 进行拼接； 使用 fmt.Spintf() 进行拼接; 使用 strings.Builder（可预分配） 进行拼接（推荐）; 使用 bytes.Buffer 进行拼接; 使用 []byte（可预分配） 进行拼接； 性能比较 🔗比较逻辑代码 🔗 go test -bench=&amp;quot;Concat$&amp;quot; -benchmem . // 正则执行以 Concat 结尾的 benchmark 函数，-benchmem 表示显示内存分配信息&#xA;package main import ( &amp;#34;bytes&amp;#34; &amp;#34;fmt&amp;#34; &amp;#34;math/rand&amp;#34; &amp;#34;strings&amp;#34; &amp;#34;testing&amp;#34; ) const letterBytes = &amp;#34;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&amp;#34; func randomString(n int) string { b := make([]byte, n) for i := range b { b[i] = letterBytes[rand.Intn(len(letterBytes))] } return string(b) } func plusConcat(n int, str string) string { s := &amp;#34;&amp;#34; for i := 0; i &amp;lt; n; i++ { s += str } return s } func sprintfConcat(n int, str string) string { s := &amp;#34;&amp;#34; for i := 0; i &amp;lt; n; i++ { s = fmt.</description>
+    </item>
+    <item>
+      <title>map “扩容策略” 和 “如何应对哈希冲突” </title>
+      <link>/posts/golang/map-%E7%9A%84%E6%89%A9%E5%AE%B9%E7%AD%96%E7%95%A5/</link>
+      <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
+      <guid>/posts/golang/map-%E7%9A%84%E6%89%A9%E5%AE%B9%E7%AD%96%E7%95%A5/</guid>
+      <description></description>
     </item>
     <item>
       <title>如何实现一个线程安全的 map 呢？</title>
