@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## 用例
+## 启动一个 HTTP 服务
 
 ```go
 
@@ -38,6 +38,39 @@ func main() {
 }
 ```
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上面第一种写法是一种简化的写法，其实底层也是调用的第二种写法的 srv.ListenAndServe()
+
+## ListenAndServe() 处理请求的底层
+
+```go
+func (srv *Server) ListenAndServe() error {
+	addr := srv.Addr
+	if addr == "" {
+		addr = ":http"
+	}
+	ln, err := net.Listen("tcp", addr)
+	if err != nil {
+		return err
+	}
+	return srv.Serve(tcpKeepAliveListener{ln.(*net.TCPListener)})
+}
+
+
+---------------------------
+
+func (srv *Server) Serve(l net.Listener) error {
+	defer l.Close()
+	...
+    // 不断循环取出TCP连接
+	for {
+        // 看我看我！！！
+		rw, e := l.Accept()
+        ...
+        // 再看我再看我！！！
+		go c.serve(ctx)
+	}
+}
+```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;可以看到每个来自客户端的请求都会起一个独立的 goroutine 去处理。
 
 ## 多路复用器
 
