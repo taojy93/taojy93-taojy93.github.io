@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <title>浮点型的“精度丢失”的原因以及解决方案 | taojy的技术博客</title>
+
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
+<meta name="viewport" content="width=device-width,minimum-scale=1">
+<meta name="description" content="单精度 &amp; 双精度 🔗 单精度浮点数（float32）采用 32 位表示，其中包括 1 位符号位、8 位整数位 、23 位尾数位。
+双精度浮点数（float64）采用 64 位表示，其中包括 1 位符号位、11 位整数位、 52 位尾数位。
+例如表示：0.1 float32：0.1 ≈ 0.00011001100110011001100（其实是无限循环 0011，这里相当于截取了） float64：0.1 ≈ 0.0001100110011001100110011001100110011001100110011001（其实是无限循环 0011，这里相当于截取了） 浮点型在计算机中的表示 🔗# 0.1 为例（float32） 0.1 * 2 = 0.2 =&gt; 0 0.2 * 2 = 0.4 =&gt; 0 0.4 * 2 = 0.8 =&gt; 0 0.8 * 2 = 1.6 =&gt; 1 0.6 * 2 = 1.2 =&gt; 1 0.2 * 2 = 0.">
+<meta name="generator" content="Hugo 0.124.1">
+
+
+  <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+
+
+
+
+
+
+
+  </head>
+
+  <body>
+    <nav class="navigation">
+	
+		<a href="/"> <span class="arrow">←</span>首页</a>
+	
+	<a href="/posts">归档</a>
+	<a href="/tags">标签</a>
+	<a href="/about">关于</a>
+
+	
+
+	
+</nav>
+
+
+    <main class="main">
+      
+
+<section id="single">
+    <h1 class="title">浮点型的“精度丢失”的原因以及解决方案</h1>
+
+    <div class="tip">
+        <time datetime="2024-03-27 21:30:20 &#43;0800 CST">2024年03月27日</time>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          137字
+        </span>
+        <span class="split">
+          ·
+        </span>
+        <span>
+          1分钟
+        </span>
+    </div>
+
+    
+    
+        
+  
+    <aside class="toc">
+      <details>
+          <summary>Table of Contents
+          </summary>
+          <div>
+              <nav id="TableOfContents">
+  <ul>
+    <li><a href="#-单精度----双精度-"><code>单精度</code> &amp; <code>双精度</code></a></li>
+    <li><a href="#浮点型在计算机中的表示">浮点型在计算机中的表示</a></li>
+    <li><a href="#精度丢失问题">精度丢失问题</a>
+      <ul>
+        <li><a href="#场景">场景</a></li>
+        <li><a href="#原因">原因</a></li>
+        <li><a href="#解决">解决</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+          </div>
+      </details>
+    </aside>
+  
+
+
+    
+
+
+    <div class="content">
+      <h2 id="-单精度----双精度-"><code>单精度</code> &amp; <code>双精度</code> <a href="#-%e5%8d%95%e7%b2%be%e5%ba%a6----%e5%8f%8c%e7%b2%be%e5%ba%a6-" class="anchor">🔗</a></h2><blockquote>
+<p><code>单精度浮点数</code>（float32）采用 32 位表示，其中包括 1 位符号位、8 位整数位 、23 位尾数位。<br />
+<code>双精度浮点数</code>（float64）采用 64 位表示，其中包括 1 位符号位、11 位整数位、 52 位尾数位。</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>例如表示：0.1
+</span></span><span style="display:flex;"><span>float32：0.1 ≈ 0.00011001100110011001100（其实是无限循环 0011，这里相当于截取了）
+</span></span><span style="display:flex;"><span>float64：0.1 ≈ 0.0001100110011001100110011001100110011001100110011001（其实是无限循环 0011，这里相当于截取了）
+</span></span></code></pre></div><h2 id="浮点型在计算机中的表示">浮点型在计算机中的表示 <a href="#%e6%b5%ae%e7%82%b9%e5%9e%8b%e5%9c%a8%e8%ae%a1%e7%ae%97%e6%9c%ba%e4%b8%ad%e7%9a%84%e8%a1%a8%e7%a4%ba" class="anchor">🔗</a></h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span># 0.1 为例（float32）
+</span></span><span style="display:flex;"><span>0.1 * 2 = 0.2  =&gt; 0
+</span></span><span style="display:flex;"><span>0.2 * 2 = 0.4  =&gt; 0
+</span></span><span style="display:flex;"><span>0.4 * 2 = 0.8  =&gt; 0
+</span></span><span style="display:flex;"><span>0.8 * 2 = 1.6  =&gt; 1
+</span></span><span style="display:flex;"><span>0.6 * 2 = 1.2  =&gt; 1
+</span></span><span style="display:flex;"><span>0.2 * 2 = 0.4  =&gt; 0 // 发现到了这里又回到了 0.4 ，所以 0.4 就是循环开始的地方，也就是 0011
+</span></span><span style="display:flex;"><span>整数位为 0
+</span></span><span style="display:flex;"><span>小数位表示为：00011001100110011001100（无限循环 0011）
+</span></span><span style="display:flex;"><span>整体表示为：0.00011001100110011001100（其实是无限循环 0011，这里相当于截取）
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span># 1.1 为例（float32）
+</span></span><span style="display:flex;"><span>整数位为 0001
+</span></span><span style="display:flex;"><span>小数位为 00011001100110011001100（无限循环 0011）
+</span></span><span style="display:flex;"><span>整体表示为：1.00011001100110011001100（其实是无限循环 0011，这里相当于截取）
+</span></span></code></pre></div><h2 id="精度丢失问题">精度丢失问题 <a href="#%e7%b2%be%e5%ba%a6%e4%b8%a2%e5%a4%b1%e9%97%ae%e9%a2%98" class="anchor">🔗</a></h2><h3 id="场景">场景 <a href="#%e5%9c%ba%e6%99%af" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0.1</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">b</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0.2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">b</span>) <span style="color:#75715e">// 0.30000000000000004
+</span></span></span></code></pre></div><h3 id="原因">原因 <a href="#%e5%8e%9f%e5%9b%a0" class="anchor">🔗</a></h3><p>        因为计算机是使用二进制来表示小数的，可是很多小数都是无限循环的，可是不管是 float32 还是 float64 能表示的范围都是有限的，也就是说 float 会对无限循环的二进制进行裁切，所以我们取的其实只是该数的一个近似值，最终拿这个近似值去计算自然也只是会得到一个近似结果，不会得到确切的结果。</p>
+<h3 id="解决">解决 <a href="#%e8%a7%a3%e5%86%b3" class="anchor">🔗</a></h3><p>        一般我们均是采用 decimal 类型来进行处理。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">decimalA</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">decimalB</span>) <span style="color:#75715e">// 加
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">decimalA</span>.<span style="color:#a6e22e">Sub</span>(<span style="color:#a6e22e">decimalB</span>) <span style="color:#75715e">// 减
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">decimalA</span>.<span style="color:#a6e22e">Mul</span>(<span style="color:#a6e22e">decimalB</span>) <span style="color:#75715e">// 乘
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">decimalA</span>.<span style="color:#a6e22e">Div</span>(<span style="color:#a6e22e">decimalB</span>) <span style="color:#75715e">// 除
+</span></span></span></code></pre></div>
+    </div>
+
+    
+        <div class="tags">
+            
+                <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            
+        </div>
+    
+    
+    
+
+</section>
+
+
+    </main>
+    
+    <footer id="footer">
+    
+
+    <div class="copyright">
+    
+        
+    
+    </div>
+
+    
+</footer>
+
+
+
+  </body>
+</html>

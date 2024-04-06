@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>计算机基础 on taojy的技术博客</title>
+    <link>/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/</link>
+    <description>Recent content in 计算机基础 on taojy的技术博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Wed, 27 Mar 2024 21:30:20 +0800</lastBuildDate>
+    <atom:link href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>浮点型的“精度丢失”的原因以及解决方案</title>
+      <link>/posts/computer/%E7%B2%BE%E5%BA%A6%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Wed, 27 Mar 2024 21:30:20 +0800</pubDate>
+      <guid>/posts/computer/%E7%B2%BE%E5%BA%A6%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98/</guid>
+      <description>单精度 &amp;amp; 双精度 🔗 单精度浮点数（float32）采用 32 位表示，其中包括 1 位符号位、8 位整数位 、23 位尾数位。&#xA;双精度浮点数（float64）采用 64 位表示，其中包括 1 位符号位、11 位整数位、 52 位尾数位。&#xA;例如表示：0.1 float32：0.1 ≈ 0.00011001100110011001100（其实是无限循环 0011，这里相当于截取了） float64：0.1 ≈ 0.0001100110011001100110011001100110011001100110011001（其实是无限循环 0011，这里相当于截取了） 浮点型在计算机中的表示 🔗# 0.1 为例（float32） 0.1 * 2 = 0.2 =&amp;gt; 0 0.2 * 2 = 0.4 =&amp;gt; 0 0.4 * 2 = 0.8 =&amp;gt; 0 0.8 * 2 = 1.6 =&amp;gt; 1 0.6 * 2 = 1.2 =&amp;gt; 1 0.2 * 2 = 0.</description>
+    </item>
+  </channel>
+</rss>
