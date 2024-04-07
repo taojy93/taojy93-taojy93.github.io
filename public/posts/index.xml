@@ -6,8 +6,15 @@
     <description>Recent content in Posts on taojy的技术博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Wed, 27 Mar 2024 21:30:20 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 07 Apr 2024 20:33:45 +0800</lastBuildDate>
     <atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>设计模式之《函数式选项模式》</title>
+      <link>/posts/coding/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%87%BD%E6%95%B0%E5%BC%8F%E9%80%89%E9%A1%B9%E6%A8%A1%E5%BC%8F/</link>
+      <pubDate>Sun, 07 Apr 2024 20:33:45 +0800</pubDate>
+      <guid>/posts/coding/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%87%BD%E6%95%B0%E5%BC%8F%E9%80%89%E9%A1%B9%E6%A8%A1%E5%BC%8F/</guid>
+      <description></description>
+    </item>
     <item>
       <title>浮点型的“精度丢失”的原因以及解决方案</title>
       <link>/posts/computer/%E7%B2%BE%E5%BA%A6%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98/</link>
@@ -55,7 +62,7 @@
       <link>/posts/coding/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</link>
       <pubDate>Sun, 27 Mar 2022 21:30:21 +0800</pubDate>
       <guid>/posts/coding/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</guid>
-      <description></description>
+      <description>简单工厂模式 🔗 简单工厂模式(Simple Factory Pattern)：又称为静态工厂方法(Static Factory Method)模式，不是23种基本设计模式中的一种，因为它不符合开闭原则； 简单工厂模式有三个角色：（1）专门定义一个类（工厂角色）来负责创建（2）其他类（具体产品角色）的实例，（3）被创建的实例通常都具有共同的父类（抽象产品角色）。&#xA;工厂并不一定需要定义一个类，可以就直接定义一个构造方法作为工厂角色就行。&#xA;type Animal interface{ Speak() } type Cat struct { } func (c *Cat) Speak() { // 产品自己的具体实现逻辑 fmt.Println(&amp;#34;喵喵~&amp;#34;) } type Dog struct { } func (d *Dog) Speak() { // 产品自己的具体实现逻辑 fmt.Println(&amp;#34;汪汪~&amp;#34;) } func NewAnimal(typeName string) Animal { switch typeName { case &amp;#34;cat&amp;#34;: return &amp;amp;Cat{} case &amp;#34;dog&amp;#34;: return &amp;amp;Dog{} default: } } func main() { tom := NewAnimal(&amp;#34;cat&amp;#34;) tom.Speak() } Animal 就是 抽象产品 Cat、Dog 就是 具体产品，当然上面的 Cat、Dog 的构造初始化还可以抽取出来，例如 NewCat() NewAnimal() 就是 工厂方法 工厂方法模式 🔗 工厂方法模式（Factory Method Pattern）是一种创建型设计模式，它定义了一个用于创建对象的接口，但将对象的实际创建延迟到子类中。这样可以使得创建对象的过程可以在不同的子类中进行定制化，同时将客户端代码与具体对象的创建逻辑解耦。</description>
     </item>
     <item>
       <title>Golang 的一些陷阱</title>
@@ -90,7 +97,7 @@
       <link>/posts/coding/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</link>
       <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
       <guid>/posts/coding/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</guid>
-      <description></description>
+      <description>单例的定义 🔗 单例模式 确保某一个类只有一个实例，而且自行实例化并向整个系统提供这个实例，这个类称为单例类，它提供全局访问的方法。&#xA;单例的实现方式 🔗方式一：饿汉模式 🔗 指的就是程序在启动的时候就初始化这个单例的实例。通常在 init 里面初始化。&#xA;var ( DbInstance *gorm.DB ) func init() { getDB() } func getDB() *gorm.DB { dsn := &amp;#34;root:root@tcp(127.0.0.1:3306)/hello?charset=utf8mb4&amp;amp;parseTime=True&amp;amp;loc=Local&amp;#34; db, err := gorm.Open(mysql.Open(dsn), &amp;amp;gorm.Config{}) if err != nil { panic(err) } // 把 db 对象赋给 全局变量 DbInstance DbInstance = db return db } // 调用：DbInstance 方式二：懒汉模式 🔗 指的就是在需要的时候才会去创建这个单例的实例。通常提供一个 构造方法 即可。&#xA;var ( dbInstance *gorm.DB once sync.Once ) func GetDB() *gorm.DB { once.Do(func() { dsn := &amp;#34;root:root@tcp(127.</description>
     </item>
   </channel>
 </rss>
