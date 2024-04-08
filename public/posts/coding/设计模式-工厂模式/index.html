@@ -6,9 +6,7 @@
     <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
 <meta name="viewport" content="width=device-width,minimum-scale=1">
-<meta name="description" content="简单工厂模式 🔗 简单工厂模式(Simple Factory Pattern)：又称为静态工厂方法(Static Factory Method)模式，不是23种基本设计模式中的一种，因为它不符合开闭原则； 简单工厂模式有三个角色：（1）专门定义一个类（工厂角色）来负责创建（2）其他类（具体产品角色）的实例，（3）被创建的实例通常都具有共同的父类（抽象产品角色）。
-工厂并不一定需要定义一个类，可以就直接定义一个构造方法作为工厂角色就行。
-type Animal interface{ Speak() } type Cat struct { } func (c *Cat) Speak() { // 产品自己的具体实现逻辑 fmt.Println(&#34;喵喵~&#34;) } type Dog struct { } func (d *Dog) Speak() { // 产品自己的具体实现逻辑 fmt.Println(&#34;汪汪~&#34;) } func NewAnimal(typeName string) Animal { switch typeName { case &#34;cat&#34;: return &amp;Cat{} case &#34;dog&#34;: return &amp;Dog{} default: } } func main() { tom := NewAnimal(&#34;cat&#34;) tom.Speak() } Animal 就是 抽象产品 Cat、Dog 就是 具体产品，当然上面的 Cat、Dog 的构造初始化还可以抽取出来，例如 NewCat() NewAnimal() 就是 工厂方法 工厂方法模式 🔗 工厂方法模式（Factory Method Pattern）是一种创建型设计模式，它定义了一个用于创建对象的接口，但将对象的实际创建延迟到子类中。这样可以使得创建对象的过程可以在不同的子类中进行定制化，同时将客户端代码与具体对象的创建逻辑解耦。">
+<meta name="description" content="简单工厂模式 🔗概述 🔗 简单工厂模式(Simple Factory Pattern)：又称为静态工厂方法(Static Factory Method)模式，不是23种基本设计模式中的一种，因为它不符合 开闭原则； 简单工厂模式 包含三个角色： 抽象产品角色：就是一个抽象的产品父类，Go 通常都是一个 interface 类来作为抽象层定义； 具体产品角色：基于 抽象产品 来实现的具体的产品类，Go 通常都是一个基础类型（int、struct 都可）作为具体类，去实现父类抽象层的 interface 即可； 工厂角色：负责创建具体类的方法我们称之为 工厂，Go 里面一般使用一个 构造方法 作为一个工厂即可。 实现 🔗type Animal interface{ Speak() } type Cat struct { } func (c *Cat) Speak() { // 产品自己的具体实现逻辑 fmt.Println(&#34;喵喵~&#34;) } type Dog struct { } func (d *Dog) Speak() { // 产品自己的具体实现逻辑 fmt.Println(&#34;汪汪~&#34;) } func NewAnimal(typeName string) Animal { switch typeName { case &#34;cat&#34;: return &amp;Cat{} case &#34;dog&#34;: return &amp;Dog{} default: } } func main() { tom := NewAnimal(&#34;cat&#34;) tom.">
 <meta name="generator" content="Hugo 0.124.1">
 
 
@@ -57,7 +55,7 @@ type Animal interface{ Speak() } type Cat struct { } func (c *Cat) Speak() { // 
           ·
         </span>
         <span>
-          244字
+          285字
         </span>
         <span class="split">
           ·
@@ -78,8 +76,20 @@ type Animal interface{ Speak() } type Cat struct { } func (c *Cat) Speak() { // 
           <div>
               <nav id="TableOfContents">
   <ul>
-    <li><a href="#简单工厂模式">简单工厂模式</a></li>
-    <li><a href="#工厂方法模式">工厂方法模式</a></li>
+    <li><a href="#简单工厂模式">简单工厂模式</a>
+      <ul>
+        <li><a href="#概述">概述</a></li>
+        <li><a href="#实现">实现</a></li>
+        <li><a href="#解析">解析</a></li>
+      </ul>
+    </li>
+    <li><a href="#工厂方法模式">工厂方法模式</a>
+      <ul>
+        <li><a href="#概述-1">概述</a></li>
+        <li><a href="#实现-1">实现</a></li>
+        <li><a href="#解析-1">解析</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
           </div>
@@ -92,10 +102,17 @@ type Animal interface{ Speak() } type Cat struct { } func (c *Cat) Speak() { // 
 
 
     <div class="content">
-      <h2 id="简单工厂模式">简单工厂模式 <a href="#%e7%ae%80%e5%8d%95%e5%b7%a5%e5%8e%82%e6%a8%a1%e5%bc%8f" class="anchor">🔗</a></h2><p>        <strong>简单工厂模式</strong>(Simple Factory Pattern)：又称为<strong>静态工厂方法</strong>(Static Factory Method)模式，不是23种基本设计模式中的一种，因为它不符合开闭原则；<br/>
-        <strong>简单工厂模式</strong>有三个角色：（1）专门定义一个类（工厂角色）来负责创建（2）其他类（具体产品角色）的实例，（3）被创建的实例通常都具有共同的父类（抽象产品角色）。<br>
-        工厂并不一定需要定义一个类，可以就直接定义一个构造方法作为工厂角色就行。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Animal</span> <span style="color:#66d9ef">interface</span>{
+      <h2 id="简单工厂模式">简单工厂模式 <a href="#%e7%ae%80%e5%8d%95%e5%b7%a5%e5%8e%82%e6%a8%a1%e5%bc%8f" class="anchor">🔗</a></h2><h3 id="概述">概述 <a href="#%e6%a6%82%e8%bf%b0" class="anchor">🔗</a></h3><ul>
+<li><strong>简单工厂模式</strong>(Simple Factory Pattern)：又称为<strong>静态工厂方法</strong>(Static Factory Method)模式，不是23种基本设计模式中的一种，因为它不符合 <code>开闭原则</code>；</li>
+<li><strong>简单工厂模式</strong> 包含三个角色：
+<ul>
+<li><strong>抽象产品角色</strong>：就是一个抽象的产品父类，Go 通常都是一个 <code>interface</code> 类来作为抽象层定义；</li>
+<li><strong>具体产品角色</strong>：基于 <code>抽象产品</code> 来实现的具体的产品类，Go 通常都是一个基础类型（int、struct 都可）作为具体类，去实现父类抽象层的 <code>interface</code> 即可；</li>
+<li><strong>工厂角色</strong>：负责创建具体类的方法我们称之为 <code>工厂</code>，Go 里面一般使用一个 <code>构造方法</code> 作为一个工厂即可。</li>
+</ul>
+</li>
+</ul>
+<h3 id="实现">实现 <a href="#%e5%ae%9e%e7%8e%b0" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Animal</span> <span style="color:#66d9ef">interface</span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Speak</span>()
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
@@ -132,14 +149,17 @@ type Animal interface{ Speak() } type Cat struct { } func (c *Cat) Speak() { // 
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">tom</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewAnimal</span>(<span style="color:#e6db74">&#34;cat&#34;</span>)
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">tom</span>.<span style="color:#a6e22e">Speak</span>()
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><ul>
+</span></span></code></pre></div><h3 id="解析">解析 <a href="#%e8%a7%a3%e6%9e%90" class="anchor">🔗</a></h3><ul>
 <li>Animal 就是 <code>抽象产品</code></li>
 <li>Cat、Dog 就是 <code>具体产品</code>，当然上面的 Cat、Dog 的构造初始化还可以抽取出来，例如 NewCat()</li>
 <li>NewAnimal() 就是 <code>工厂方法</code></li>
 </ul>
-<h2 id="工厂方法模式">工厂方法模式 <a href="#%e5%b7%a5%e5%8e%82%e6%96%b9%e6%b3%95%e6%a8%a1%e5%bc%8f" class="anchor">🔗</a></h2><p>        <strong>工厂方法模式</strong>（Factory Method Pattern）是一种创建型设计模式，它定义了一个用于创建对象的接口，但将对象的实际创建延迟到子类中。这样可以使得创建对象的过程可以在不同的子类中进行定制化，同时将客户端代码与具体对象的创建逻辑解耦。<br />
-        <strong>工厂方法模式</strong> 相比较<strong>简单工厂模式</strong>就是把工厂分为了<code>抽象层</code>和<code>具体层</code>，这么做的目的就是<strong>简单工厂模式</strong>的那个工厂方法职责太重了，抽象一层就会分散工厂方法的压力。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<h2 id="工厂方法模式">工厂方法模式 <a href="#%e5%b7%a5%e5%8e%82%e6%96%b9%e6%b3%95%e6%a8%a1%e5%bc%8f" class="anchor">🔗</a></h2><h3 id="概述-1">概述 <a href="#%e6%a6%82%e8%bf%b0-1" class="anchor">🔗</a></h3><ul>
+<li><strong>工厂方法模式</strong>（Factory Method Pattern）是一种创建型设计模式，它定义了一个用于创建对象的接口，但将对象的实际创建延迟到子类中。这样可以使得创建对象的过程可以在不同的子类中进行定制化，同时将客户端代码与具体对象的创建逻辑解耦。</li>
+<li><strong>工厂方法模式</strong> 包含四个角色：抽象产品、具体产品、抽象工厂、具体工厂；</li>
+<li><strong>工厂方法模式</strong> 相比较<strong>简单工厂模式</strong>就是把工厂分为了<code>抽象层</code>和<code>具体层</code>，这么做的目的就是<strong>简单工厂模式</strong>的那个工厂方法职责太重了，抽象一层就会分散工厂方法的压力。</li>
+</ul>
+<h3 id="实现-1">实现 <a href="#%e5%ae%9e%e7%8e%b0-1" class="anchor">🔗</a></h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
 </span></span><span style="display:flex;"><span>
@@ -200,7 +220,13 @@ type Animal interface{ Speak() } type Cat struct { } func (c *Cat) Speak() { // 
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">dog</span>.<span style="color:#a6e22e">Speak</span>()) <span style="color:#75715e">// 输出: Woof!
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">cat</span>.<span style="color:#a6e22e">Speak</span>()) <span style="color:#75715e">// 输出: Meow!
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
-</span></span></code></pre></div>
+</span></span></code></pre></div><h3 id="解析-1">解析 <a href="#%e8%a7%a3%e6%9e%90-1" class="anchor">🔗</a></h3><ul>
+<li>Cat 和 Dog 就是 <code>具体产品</code></li>
+<li>Animal 就是 <code>抽象产品</code></li>
+<li>CatFactory、DogFactory 就是 <code>具体工厂</code></li>
+<li>AnimalFactory 就是 <code>抽象工厂</code></li>
+</ul>
+
     </div>
 
     
