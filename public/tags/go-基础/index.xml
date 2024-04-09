@@ -37,17 +37,17 @@
       <description>for range 的陷阱 🔗m := map[int]string{ 1: &amp;#34;one&amp;#34;, 2: &amp;#34;two&amp;#34;, 3: &amp;#34;three&amp;#34;, } sli := []*string{} for _, v := range m { sli = append(sli, &amp;amp;v) } fmt.Println(*sli[0], *sli[1], *sli[2]) // three three three 为什么每次输出都一样呢？因为 for range 循环的时候 v 是一个副本，地址是不变的，所以不要把 &amp;amp;v 作为值复制给别的变量值，要不然每次读取的都是同一个地址上的值，当然是一样的了。</description>
     </item>
     <item>
-      <title>map “扩容策略” 和 “如何应对哈希冲突” </title>
-      <link>/posts/golang/map-%E7%9A%84%E6%89%A9%E5%AE%B9%E7%AD%96%E7%95%A5/</link>
+      <title>map 的深入了解</title>
+      <link>/posts/golang/map%E8%A7%A3%E6%9E%90/</link>
       <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
-      <guid>/posts/golang/map-%E7%9A%84%E6%89%A9%E5%AE%B9%E7%AD%96%E7%95%A5/</guid>
+      <guid>/posts/golang/map%E8%A7%A3%E6%9E%90/</guid>
       <description> Go 的 Map 有两种扩容策略：&amp;ldquo;增量扩容&amp;rdquo; 和 &amp;ldquo;等量扩容&amp;rdquo;&#xA;增量扩容 🔗触发原因 🔗 当装载因子&amp;gt; 6.5 的时候就会触发 double扩容，因为此时数据太多，会导致查询和写入的效率大大降低。（装载因子=kv数/bucket）&#xA;扩容过程 🔗等量扩容 🔗触发原因 🔗扩容过程 🔗</description>
     </item>
     <item>
       <title>如何实现一个线程安全的 map 呢？</title>
-      <link>/posts/golang/%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84map%E5%91%A2/</link>
+      <link>/posts/golang/%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84map/</link>
       <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
-      <guid>/posts/golang/%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84map%E5%91%A2/</guid>
+      <guid>/posts/golang/%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84map/</guid>
       <description>Golang 的 Map 不但是 无序 的，而且还是 非线程安全的。&#xA;读写锁 实现线程安全 map 🔗定义 🔗type SafeMap struct { mu sync.RWMutex m map[string]int } func NewSafeMap() *SafeMap { return &amp;amp;SafeMap{ m: make(map[string]int), } } func (sm *SafeMap) Get(key string) (int, bool) { sm.mu.RLock() defer sm.mu.RUnlock() val, ok := sm.m[key] return val, ok } func (sm *SafeMap) Set(key string, value int) { sm.mu.Lock() defer sm.mu.Unlock() sm.m[key] = value } 使用 🔗safeMap := NewSafeMap() // 读操作 val, ok := safeMap.</description>
     </item>
   </channel>
