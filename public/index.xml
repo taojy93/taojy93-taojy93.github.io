@@ -23,10 +23,10 @@
       <description>单精度 &amp;amp; 双精度 🔗 单精度浮点数（float32）采用 32 位表示，其中包括 1 位符号位、8 位整数位 、23 位尾数位。&#xA;双精度浮点数（float64）采用 64 位表示，其中包括 1 位符号位、11 位整数位、 52 位尾数位。&#xA;例如表示：0.1 float32：0.1 ≈ 0.00011001100110011001100（其实是无限循环 0011，这里相当于截取了） float64：0.1 ≈ 0.0001100110011001100110011001100110011001100110011001（其实是无限循环 0011，这里相当于截取了） 浮点型在计算机中的表示 🔗# 0.1 为例（float32） 0.1 * 2 = 0.2 =&amp;gt; 0 0.2 * 2 = 0.4 =&amp;gt; 0 0.4 * 2 = 0.8 =&amp;gt; 0 0.8 * 2 = 1.6 =&amp;gt; 1 0.6 * 2 = 1.2 =&amp;gt; 1 0.2 * 2 = 0.</description>
     </item>
     <item>
-      <title>锁的原理</title>
-      <link>/posts/golang/%E9%94%81%E7%9A%84%E5%8E%9F%E7%90%86/</link>
+      <title>lock 的深入理解</title>
+      <link>/posts/golang/lock/</link>
       <pubDate>Thu, 27 Apr 2023 21:30:20 +0800</pubDate>
-      <guid>/posts/golang/%E9%94%81%E7%9A%84%E5%8E%9F%E7%90%86/</guid>
+      <guid>/posts/golang/lock/</guid>
       <description></description>
     </item>
     <item>
@@ -51,13 +51,6 @@
       <description></description>
     </item>
     <item>
-      <title>slice 扩容策略</title>
-      <link>/posts/golang/slice%E6%89%A9%E5%AE%B9/</link>
-      <pubDate>Wed, 27 Apr 2022 21:30:20 +0800</pubDate>
-      <guid>/posts/golang/slice%E6%89%A9%E5%AE%B9/</guid>
-      <description>各个版本的扩容策略有些区别，我们谈谈 1.18 之前和之后&#xA;&amp;lt;1.18 版本 🔗源码 🔗newcap := old.cap doublecap := newcap + newcap if cap &amp;gt; doublecap { newcap = cap } else { if old.cap &amp;lt; 1024 { newcap = doublecap } else { // Check 0 &amp;lt; newcap to detect overflow // and prevent an infinite loop. for 0 &amp;lt; newcap &amp;amp;&amp;amp; newcap &amp;lt; cap { newcap += newcap / 4 } // Set newcap to the requested cap when // the newcap calculation overflowed.</description>
-    </item>
-    <item>
       <title>设计模式之《工厂模式》</title>
       <link>/posts/coding/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</link>
       <pubDate>Sun, 27 Mar 2022 21:30:21 +0800</pubDate>
@@ -79,13 +72,6 @@
       <description>在 Go 语言中，字符串(string) 是不可变的，拼接字符串事实上是创建了一个新的字符串对象。如果代码中存在大量的字符串拼接，对性能会产生严重的影响。&#xA;几种常见的拼接方式 🔗 使用 + 进行拼接； 使用 fmt.Spintf() 进行拼接; 使用 strings.Builder（可预分配） 进行拼接（推荐）; 使用 bytes.Buffer 进行拼接; 使用 []byte（可预分配） 进行拼接； 性能比较 🔗比较逻辑代码 🔗 go test -bench=&amp;quot;Concat$&amp;quot; -benchmem . // 正则执行以 Concat 结尾的 benchmark 函数，-benchmem 表示显示内存分配信息&#xA;package main import ( &amp;#34;bytes&amp;#34; &amp;#34;fmt&amp;#34; &amp;#34;math/rand&amp;#34; &amp;#34;strings&amp;#34; &amp;#34;testing&amp;#34; ) const letterBytes = &amp;#34;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&amp;#34; func randomString(n int) string { b := make([]byte, n) for i := range b { b[i] = letterBytes[rand.Intn(len(letterBytes))] } return string(b) } func plusConcat(n int, str string) string { s := &amp;#34;&amp;#34; for i := 0; i &amp;lt; n; i++ { s += str } return s } func sprintfConcat(n int, str string) string { s := &amp;#34;&amp;#34; for i := 0; i &amp;lt; n; i++ { s = fmt.</description>
     </item>
     <item>
-      <title>map 的深入了解</title>
-      <link>/posts/golang/map%E8%A7%A3%E6%9E%90/</link>
-      <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
-      <guid>/posts/golang/map%E8%A7%A3%E6%9E%90/</guid>
-      <description> Go 的 Map 有两种扩容策略：&amp;ldquo;增量扩容&amp;rdquo; 和 &amp;ldquo;等量扩容&amp;rdquo;&#xA;增量扩容 🔗触发原因 🔗 当装载因子&amp;gt; 6.5 的时候就会触发 double扩容，因为此时数据太多，会导致查询和写入的效率大大降低。（装载因子=kv数/bucket）&#xA;扩容过程 🔗等量扩容 🔗触发原因 🔗扩容过程 🔗</description>
-    </item>
-    <item>
       <title>如何实现一个线程安全的 map 呢？</title>
       <link>/posts/golang/%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84map/</link>
       <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
@@ -98,6 +84,20 @@
       <pubDate>Sun, 27 Mar 2022 21:30:20 +0800</pubDate>
       <guid>/posts/coding/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</guid>
       <description>单例的定义 🔗 单例模式 确保某一个类只有一个实例，而且自行实例化并向整个系统提供这个实例，这个类称为单例类，它提供全局访问的方法。&#xA;单例的实现方式 🔗方式一：饿汉模式 🔗 指的就是程序在启动的时候就初始化这个单例的实例。通常在 init 里面初始化。&#xA;var ( DbInstance *gorm.DB ) func init() { getDB() } func getDB() *gorm.DB { dsn := &amp;#34;root:root@tcp(127.0.0.1:3306)/hello?charset=utf8mb4&amp;amp;parseTime=True&amp;amp;loc=Local&amp;#34; db, err := gorm.Open(mysql.Open(dsn), &amp;amp;gorm.Config{}) if err != nil { panic(err) } // 把 db 对象赋给 全局变量 DbInstance DbInstance = db return db } // 调用：DbInstance 方式二：懒汉模式 🔗 指的就是在需要的时候才会去创建这个单例的实例。通常提供一个 构造方法 即可。&#xA;var ( dbInstance *gorm.DB once sync.Once ) func GetDB() *gorm.DB { once.Do(func() { dsn := &amp;#34;root:root@tcp(127.</description>
+    </item>
+    <item>
+      <title>map 的深入了解</title>
+      <link>/posts/golang/map%E8%A7%A3%E6%9E%90/</link>
+      <pubDate>Sat, 02 Jan 2021 21:30:20 +0800</pubDate>
+      <guid>/posts/golang/map%E8%A7%A3%E6%9E%90/</guid>
+      <description> Go 的 Map 有两种扩容策略：&amp;ldquo;增量扩容&amp;rdquo; 和 &amp;ldquo;等量扩容&amp;rdquo;&#xA;增量扩容 🔗触发原因 🔗 当装载因子&amp;gt; 6.5 的时候就会触发 double扩容，因为此时数据太多，会导致查询和写入的效率大大降低。（装载因子=kv数/bucket）&#xA;扩容过程 🔗等量扩容 🔗触发原因 🔗扩容过程 🔗</description>
+    </item>
+    <item>
+      <title>slice 扩容策略</title>
+      <link>/posts/golang/slice%E6%89%A9%E5%AE%B9/</link>
+      <pubDate>Fri, 01 Jan 2021 21:30:20 +0800</pubDate>
+      <guid>/posts/golang/slice%E6%89%A9%E5%AE%B9/</guid>
+      <description>各个版本的扩容策略有些区别，我们谈谈 1.18 之前和之后&#xA;&amp;lt;1.18 版本 🔗源码 🔗newcap := old.cap doublecap := newcap + newcap if cap &amp;gt; doublecap { newcap = cap } else { if old.cap &amp;lt; 1024 { newcap = doublecap } else { // Check 0 &amp;lt; newcap to detect overflow // and prevent an infinite loop. for 0 &amp;lt; newcap &amp;amp;&amp;amp; newcap &amp;lt; cap { newcap += newcap / 4 } // Set newcap to the requested cap when // the newcap calculation overflowed.</description>
     </item>
   </channel>
 </rss>

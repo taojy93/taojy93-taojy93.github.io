@@ -29,7 +29,7 @@
     <loc>/tags/go-%E5%9F%BA%E7%A1%80/</loc>
     <lastmod>2023-04-27T21:30:20+08:00</lastmod>
   </url><url>
-    <loc>/posts/golang/%E9%94%81%E7%9A%84%E5%8E%9F%E7%90%86/</loc>
+    <loc>/posts/golang/lock/</loc>
     <lastmod>2023-04-27T21:30:20+08:00</lastmod>
   </url><url>
     <loc>/tags/redis/</loc>
@@ -50,9 +50,6 @@
     <loc>/posts/golang/gpm%E8%B0%83%E5%BA%A6%E5%99%A8/</loc>
     <lastmod>2022-04-27T21:30:20+08:00</lastmod>
   </url><url>
-    <loc>/posts/golang/slice%E6%89%A9%E5%AE%B9/</loc>
-    <lastmod>2022-04-27T21:30:20+08:00</lastmod>
-  </url><url>
     <loc>/posts/coding/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</loc>
     <lastmod>2022-03-27T21:30:21+08:00</lastmod>
   </url><url>
@@ -68,14 +65,17 @@
     <loc>/posts/golang/%E9%AB%98%E6%95%88%E6%8B%BC%E6%8E%A5%E5%AD%97%E7%AC%A6%E4%B8%B2/</loc>
     <lastmod>2022-03-27T21:30:20+08:00</lastmod>
   </url><url>
-    <loc>/posts/golang/map%E8%A7%A3%E6%9E%90/</loc>
-    <lastmod>2022-03-27T21:30:20+08:00</lastmod>
-  </url><url>
     <loc>/posts/golang/%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84map/</loc>
     <lastmod>2022-03-27T21:30:20+08:00</lastmod>
   </url><url>
     <loc>/posts/coding/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</loc>
     <lastmod>2022-03-27T21:30:20+08:00</lastmod>
+  </url><url>
+    <loc>/posts/golang/map%E8%A7%A3%E6%9E%90/</loc>
+    <lastmod>2021-01-02T21:30:20+08:00</lastmod>
+  </url><url>
+    <loc>/posts/golang/slice%E6%89%A9%E5%AE%B9/</loc>
+    <lastmod>2021-01-01T21:30:20+08:00</lastmod>
   </url><url>
     <loc>/about/</loc>
     <lastmod>2020-03-27T21:30:20+08:00</lastmod>
